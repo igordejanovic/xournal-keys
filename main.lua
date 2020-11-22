@@ -4,86 +4,84 @@
 -- -ACTION_RULER (Does this toggle ruler, or is there a way to specify on/off?)
 -- Register all Toolbar actions and intialize all UI stuff
 function initUi()
-  app.registerUi({["menu"] = "Hand", ["callback"] = "hand", ["accelerator"] = "a"});
-  app.registerUi({["menu"] = "Select Region", ["callback"] = "lasso", ["accelerator"] = "g"});
-  app.registerUi({["menu"] = "Pen", ["callback"] = "pen", ["accelerator"] = "f"});
-  app.registerUi({["menu"] = "Highlighter", ["callback"] = "highlighter", ["accelerator"] = "<Shift>f"});
-  app.registerUi({["menu"] = "Undo", ["callback"] = "undo", ["accelerator"] = "r"});
-  app.registerUi({["menu"] = "Redo", ["callback"] = "redo", ["accelerator"] = "<Shift>r"});
-  app.registerUi({["menu"] = "Copy", ["callback"] = "copy", ["accelerator"] = "c"});
-  app.registerUi({["menu"] = "Paste", ["callback"] = "paste", ["accelerator"] = "v"});
-  app.registerUi({["menu"] = "Cut", ["callback"] = "cut", ["accelerator"] = "x"});
-  app.registerUi({["menu"] = "Delete", ["callback"] = "delete", ["accelerator"] = "t"});
---  app.registerUi({["menu"] = "Ruler", ["callback"] = "ruler", ["accelerator"] = "w"});
-  app.registerUi({["menu"] = "Eraser", ["callback"] = "eraser", ["accelerator"] = "e"});
-  app.registerUi({["menu"] = "Vertical space", ["callback"] = "space", ["accelerator"] = "s"});
-  app.registerUi({["menu"] = "Colors/black", ["callback"] = "black", ["accelerator"] = "1"});
-  app.registerUi({["menu"] = "Colors/red", ["callback"] = "red", ["accelerator"] = "2"});
-  app.registerUi({["menu"] = "Colors/green", ["callback"] = "green", ["accelerator"] = "3"});
+
+  -- see key names at https://github.com/tindzk/GTK/blob/master/gdk/gdkkeysyms.h
+
+  local s = {}
+  s["a"] = "hand";
+  s["g"] = "lasso";
+  s["f"] = "pen";
+  s["<Shift>f"] = "highlighter";
+  s["r"] = "undo";
+  s["<Shift>r"] = "redo";
+  s["c"] = "copy";
+  s["v"] = "paste";
+  s["x"] = "cut";
+  s["t"] = "delete";
+  s["e"] = "eraser";
+  s["s"] = "space";
+  s["1"] = "Black";
+  s["2"] = "Red";
+  s["3"] = "Light_Green";
+  s["w"] = "toggleruler"; -- blindly
+
+  for k,v in pairs(s) do
+    app.registerUi({["menu"] = firstToUpper(v), ["callback"] = v, ["accelerator"] = k});
+  end
+
 end
 
-function black()
-	app.changeToolColor({["color"] = 0x000000, ["tool"] = "pen", ["selection"] = true})
+function act(a)
+  return function()
+    app.uiAction({["action"] = a})
+  end
 end
 
-function red()
-	app.changeToolColor({["color"] = 0xff0000, ["tool"] = "pen", ["selection"] = true})
+function color(c)
+  return function()
+    app.changeToolColor({["color"] = c, ["tool"] = "pen", ["selection"] = true})
+  end
 end
 
-function green()
-	app.changeToolColor({["color"] = 0x00ff00, ["tool"] = "pen", ["selection"] = true})
+function firstToUpper(str)
+    return (str:gsub("^%l", string.upper))
 end
 
-function hand()
-  app.uiAction({["action"] = "ACTION_TOOL_HAND"})
+-- see color names at https://github.com/xournalpp/xournalpp/blob/master/src/gui/toolbarMenubar/model/ToolbarColorNames.cpp
+
+Black = color(0x000000)
+Green = color(0x008000)
+Light_Blue = color(0x00c0ff)
+Light_Green = color(0x00ff00)
+Blue = color(0x3333cc)
+Gray = color(0x808080)
+Red = color(0xff0000)
+Magenta = color(0xff00ff)
+Orange = color(0xff8000)
+Yellow = color(0xffff00)
+White = color(0xffffff)
+
+-- see actions at https://github.com/xournalpp/xournalpp/blob/master/src/enums/ActionType.enum.h
+
+hand = act("ACTION_TOOL_HAND")
+lasso = act("ACTION_TOOL_SELECT_REGION")
+pen = act("ACTION_TOOL_PEN")
+highlighter = act("ACTION_TOOL_HILIGHTER")
+undo = act("ACTION_UNDO")
+redo = act("ACTION_REDO")
+copy = act("ACTION_COPY")
+cut = act("ACTION_CUT")
+paste = act("ACTION_PASTE")
+delete = act("ACTION_DELETE")
+eraser = act("ACTION_TOOL_ERASER")
+space = act("ACTION_TOOL_VERTICAL_SPACE")
+ruler = act("ACTION_RULER")
+function noruler()
+    app.uiAction({["action"] = "ACTION_RULER", ["enabled"] = false})
+end
+hasRuler = false
+function toggleruler()
+    ruler = not hasRuler
+    app.uiAction({["action"] = "ACTION_RULER", ["enabled"] = hasRuler})
 end
 
-function lasso()
-  app.uiAction({["action"] = "ACTION_TOOL_SELECT_REGION"})
-end
-
-function pen()
-  app.uiAction({["action"] = "ACTION_TOOL_PEN"})
-end
-
-function highlighter()
-  app.uiAction({["action"] = "ACTION_TOOL_HILIGHTER"})
-end
-
-function undo()
-  app.uiAction({["action"] = "ACTION_UNDO"})
-end
-
--- This doesn't work?
-function redo()
-  app.uiAction({["action"] = "ACTION_REDO"})
-end
-
-function copy()
-  app.uiAction({["action"] = "ACTION_COPY"})
-end
-
-function cut()
-  app.uiAction({["action"] = "ACTION_CUT"})
-end
-
-function paste()
-  app.uiAction({["action"] = "ACTION_PASTE"})
-end
-
-function delete()
-  app.uiAction({["action"] = "ACTION_DELETE"})
-end
-
-function eraser()
-  app.uiAction({["action"] = "ACTION_TOOL_ERASER"})
-end
-
-function space()
-  app.uiAction({["action"] = "ACTION_TOOL_VERTICAL_SPACE"})
-end
-
--- Disable this because it doesn't turn the ruler off again
--- function ruler()
---   app.uiAction({["action"] = "ACTION_RULER"})
--- end
