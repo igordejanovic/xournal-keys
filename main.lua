@@ -7,9 +7,9 @@ function initUi()
   app.registerUi({["menu"] = "Hand", ["callback"] = "hand", ["accelerator"] = "a"});
   app.registerUi({["menu"] = "Select Region", ["callback"] = "lasso", ["accelerator"] = "g"});
   app.registerUi({["menu"] = "Pen", ["callback"] = "pen", ["accelerator"] = "f"});
-  app.registerUi({["menu"] = "Undo", ["callback"] = "undo", ["accelerator"] = "r"});
-  app.registerUi({["menu"] = "Redo", ["callback"] = "redo", ["accelerator"] = "<Shift>r"});
   app.registerUi({["menu"] = "Highlighter", ["callback"] = "highlighter", ["accelerator"] = "d"});
+  app.registerUi({["menu"] = "Undo", ["callback"] = "undo", ["accelerator"] = "u"});
+  app.registerUi({["menu"] = "Redo", ["callback"] = "redo", ["accelerator"] = "r"});
   app.registerUi({["menu"] = "Copy", ["callback"] = "copy", ["accelerator"] = "c"});
   app.registerUi({["menu"] = "Paste", ["callback"] = "paste", ["accelerator"] = "v"});
   app.registerUi({["menu"] = "Cut", ["callback"] = "cut", ["accelerator"] = "x"});
